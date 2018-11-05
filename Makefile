@@ -19,6 +19,10 @@ CFLAGS += -I$(PROJ_FILES)/include/generated -I. -Iarch/cores/$(CONFIG_ARCH) -I$(
 CFLAGS += -MMD -MP -DWITH_LIBECC_CONFIG_OVERRIDE -DWITH_CURVE_FRP256V1 -DWITH_HASH_SHA256 -DWITH_SIG_ECDSA
 #CFLAGS += -MMD -MP
 
+# Add the libecc specific CFLAGS
+CFLAGS += $(LIBSIGN_CFLAGS)
+
+
 LDFLAGS += -fno-builtin -nostdlib -nostartfiles
 LD_LIBS += -lsign -L$(BUILD_DIR)
 
