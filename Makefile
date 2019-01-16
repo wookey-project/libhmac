@@ -12,11 +12,12 @@ VERSION = 1
 # use an app-specific build dir
 APP_BUILD_DIR = $(BUILD_DIR)/libs/$(LIB_NAME)
 
+CFLAGS += $(LIBS_CFLAGS)
 CFLAGS += -ffreestanding -fpie -ffunction-sections -fdata-sections
-CFLAGS += -I../common -I../std -I../../externals/libecc/src
+CFLAGS += -I../../externals/libecc/src
 CFLAGS += -I$(PROJ_FILES)/include/generated -I. -Iarch/cores/$(CONFIG_ARCH) -I$(PROJ_FILES)
 CFLAGS += -MMD -MP -DWITH_LIBECC_CONFIG_OVERRIDE -DWITH_CURVE_FRP256V1 -DWITH_HASH_SHA256 -DWITH_SIG_ECDSA
-#CFLAGS += -MMD -MP
+CFLAGS += -MMD -MP -Os
 
 # Add the libecc specific CFLAGS
 CFLAGS += $(LIBSIGN_CFLAGS)
