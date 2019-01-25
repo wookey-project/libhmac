@@ -4,8 +4,4 @@ config USR_LIB_HMAC
   select USR_LIB_SIGN
   ---help---
   Support for HMAC libarary in userspace.
-config USR_LIB_HMAC_CFLAGS
-  string
-  default " -I../../libs/hmac " if USR_LIB_HMAC
-
 

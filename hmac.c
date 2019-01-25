@@ -1,6 +1,6 @@
 #include "api/types.h"
 #include "api/regutils.h"
-#include "hmac.h"
+#include "api/hmac.h"
 
 int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, hash_alg_type hash_type){
         uint8_t ipad[MAX_BLOCK_SIZE];
@@ -31,7 +31,7 @@ int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, h
 		ctx->hash->hfunc_init(&tmp_ctx);
 		ctx->hash->hfunc_update(&tmp_ctx, hmackey, hmackey_len);
 		ctx->hash->hfunc_finalize(&tmp_ctx, local_hmac_key);
-		local_hmac_key_len = ctx->hash->digest_size;	
+		local_hmac_key_len = ctx->hash->digest_size;
 	}
 
         /* Initialize our input and output hash contexts */
@@ -71,7 +71,7 @@ int hmac_finalize(hmac_context *ctx, uint8_t *output, uint32_t *outlen){
 	ctx->hash->hfunc_update(&(ctx->out_ctx), in_hash, ctx->hash->digest_size);
 	ctx->hash->hfunc_finalize(&(ctx->out_ctx), output);
 	*outlen = ctx->hash->digest_size;
-	
+
 	return 0;
 err:
 	return -1;
@@ -82,7 +82,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 	uint8_t prev_hmac[MAX_DIGEST_SIZE];
 	uint8_t pbkdf[MAX_DIGEST_SIZE];
 	hmac_context hm_ctx, hm_ctx_init;
-	const hash_mapping *hash; 
+	const hash_mapping *hash;
 	uint32_t i, j, k;
 	unsigned int num_rounds;
 	uint32_t hmac_len = MAX_DIGEST_SIZE;
@@ -94,7 +94,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
         }
 	if(*outlen < dklen){
 		goto err;
-	}	
+	}
 	if(hmac_init(&hm_ctx_init, password, password_len, hash_type)){
 		goto err;
 	}

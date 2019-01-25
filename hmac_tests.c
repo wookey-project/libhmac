@@ -1,5 +1,5 @@
-#include "hmac.h"
 #include "autoconf.h"
+#include "api/hmac.h"
 
 #ifdef HMAC_TEST_VECTORS
 /*** HMAC test vectors, stolen from RFC4231 (https://tools.ietf.org/html/rfc4231) *****/
