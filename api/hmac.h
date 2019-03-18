@@ -3,7 +3,8 @@
 
 /* Import libecc for hash functions */
 #include "libsig.h"
-#include "api/print.h"
+#include "api/stdio.h"
+#include "api/nostd.h"
 
 /* The HMAC structure is made of two hash contexts */
 typedef struct {
