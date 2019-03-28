@@ -1,5 +1,6 @@
 #include "api/types.h"
 #include "api/regutils.h"
+#include "api/arpa/inet.h"
 #include "api/hmac.h"
 
 int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, hash_alg_type hash_type){
@@ -103,7 +104,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 	}
 	num_rounds = (dklen % hash->digest_size == 0) ? (dklen / hash->digest_size) : ((dklen / hash->digest_size) + 1);
 	for(i = 0; i < num_rounds; i++){
-		uint32_t big_i = to_big32(i+1);
+		uint32_t big_i = htonl(i+1);
 		local_memset(pbkdf, 0, sizeof(pbkdf));
 		hm_ctx = hm_ctx_init;
 		hmac_update(&hm_ctx, salt, salt_len);
