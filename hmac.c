@@ -1,6 +1,6 @@
-#include "api/types.h"
-#include "api/regutils.h"
-#include "api/arpa/inet.h"
+#include "libc/types.h"
+#include "libc/regutils.h"
+#include "libc/arpa/inet.h"
 #include "api/hmac.h"
 
 int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, hash_alg_type hash_type){
