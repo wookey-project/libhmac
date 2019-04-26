@@ -102,7 +102,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 	if(c == 0){
 		goto err;
 	}
-	num_rounds = (dklen % hash->digest_size == 0) ? (dklen / hash->digest_size) : ((dklen / hash->digest_size) + 1);
+	num_rounds = ((dklen % hash->digest_size) == 0) ? (dklen / hash->digest_size) : ((dklen / hash->digest_size) + 1);
 	for(i = 0; i < num_rounds; i++){
 		uint32_t big_i = htonl(i+1);
 		local_memset(pbkdf, 0, sizeof(pbkdf));
@@ -128,7 +128,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 				pbkdf[k] ^= hmac[k];
 			}
 		}
-		if((i == num_rounds-1) && ((dklen % hash->digest_size) != 0)){
+		if((i == (num_rounds-1)) && ((dklen % hash->digest_size) != 0)){
 			local_memcpy(output+(i * hash->digest_size), pbkdf, dklen % hash->digest_size);
 		}
 		else{
