@@ -8,10 +8,16 @@ The HMAC stack
 Overview
 --------
 
-The LibHMAC project aim to implement a HMAC (Hash-based Message Authentication
+The libhmac project aim to implement a HMAC (Hash-based Message Authentication
 Code) userspace library.
 
-This library supports the PBKDF2 key derivation function.
+This library also supports the PBKDF2 key derivation function.
+
+This library is full software and does not make use of underlying hardware
+acceleration. Future work include adding such acceleration modes.
+
+This library uses the external libecc library (https://github.com/ANSSI-FR/libecc)
+as a building block that provides all the hash functions software implementations.
 
 Principles
 """"""""""
@@ -20,6 +26,13 @@ HMAC is a specific MAC function which involves a cryptographic hash function and
 a cryptographic secret key in order to authenticate data and/or check data
 integrity.
 
+HMAC design is described here:
+
+https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.198-1.pdf
+
+PBKDF2 key derivation is described here:
+
+https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
 
 API
 ---
@@ -30,7 +43,7 @@ The HMAC functional API
 Initializing the HMAC context
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Initialize the HMAC context is made through two main functions ::
+Initialize the HMAC context is made through two main functions: ::
 
    #include "hmac.h"
 
@@ -43,7 +56,7 @@ Initialize the HMAC context is made through two main functions ::
    int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, hash_alg_type hash_type);
 
 
-This library doesn't require any early_init step as the HMAC implementation is
+This library does not require any early_init step as the HMAC implementation is
 full software.
 
 The HMAC initialization function uses the following arguments:
@@ -65,7 +78,7 @@ Hashing data
 ^^^^^^^^^^^^
 
 Hashing data can be done through successive calls to the libhmac API.
-Hashing data is done using the following API ::
+Hashing data is done using the following API: ::
 
    #include "hmac.h"
 
@@ -76,20 +89,20 @@ All successive hash requests of a given data flow is done using the
 ``hmac_update()`` function. The last call **must** be done using the
 ``hmac_finalize()`` function.
 
-The hmac context must be passed to the HMAC API as the libHMAC doesn't keep the
-current context. This allow the user task to manipulate multiple contexts in the
+The HMAC context must be provided to the HMAC API as the libhmac does not keep the
+current context. This allows the user task to manipulate multiple contexts in the
 same time if needed.
 
 The ``hmac_finalize()`` function returns 0 on success or -1 on failure.
 
 
-Generate HMAC_based derivated keys
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generate HMAC_based derived keys
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The libHMAC supports PBKDF2 password HMAC-based derivation function to generate
-derivation keys.
+The libhmac supports PBKDF2 password hash-based derivation function to generate
+derived keys.
 
-Requesting a PBKDF2 computation is done using the following API ::
+Requesting a PBKDF2 computation is done using the following API: ::
 
    #include "hmac.h"
 
@@ -103,7 +116,4 @@ Requesting a PBKDF2 computation is done using the following API ::
                          uint8_t       *output,
                          uint32_t      *outlen);
 
-
-FAQ
----
 
