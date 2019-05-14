@@ -1,5 +1,8 @@
 .. _lib_hmac:
 
+
+.. highlight:: c
+
 The HMAC stack
 ==============
 
