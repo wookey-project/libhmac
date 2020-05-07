@@ -29,25 +29,53 @@ int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, h
 		 * We hash it to shorten it.
 		 */
 		hash_context tmp_ctx;
+		/* Check our callback */
+		if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+			goto err;
+		}
 		ctx->hash->hfunc_init(&tmp_ctx);
+		/* Check our callback */
+		if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+			goto err;
+		}
 		ctx->hash->hfunc_update(&tmp_ctx, hmackey, hmackey_len);
+		/* Check our callback */
+		if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+			goto err;
+		}
 		ctx->hash->hfunc_finalize(&tmp_ctx, local_hmac_key);
 		local_hmac_key_len = ctx->hash->digest_size;
 	}
 
         /* Initialize our input and output hash contexts */
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
         ctx->hash->hfunc_init(&(ctx->in_ctx));
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
         ctx->hash->hfunc_init(&(ctx->out_ctx));
 
         /* Update our input context with K^ipad */
         for(i = 0; i < local_hmac_key_len; i++){
                 ipad[i] ^= local_hmac_key[i];
         }
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
         ctx->hash->hfunc_update(&(ctx->in_ctx), ipad, ctx->hash->block_size);
         /* Update our output context with K^opad */
         for(i = 0; i < local_hmac_key_len; i++){
                 opad[i] ^= local_hmac_key[i];
         }
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
         ctx->hash->hfunc_update(&(ctx->out_ctx), opad, ctx->hash->block_size);
 
         return 0;
@@ -57,6 +85,13 @@ err:
 }
 
 void hmac_update(hmac_context *ctx, const uint8_t *input, uint32_t ilen){
+	if(ctx == NULL){
+		return;
+	}
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		return;
+	}
 	ctx->hash->hfunc_update(&(ctx->in_ctx), input, ilen);
 	return;
 }
@@ -64,12 +99,28 @@ void hmac_update(hmac_context *ctx, const uint8_t *input, uint32_t ilen){
 int hmac_finalize(hmac_context *ctx, uint8_t *output, uint32_t *outlen){
 	uint8_t in_hash[MAX_DIGEST_SIZE];
 
-	if(*outlen < ctx->hash->digest_size){
+	if((ctx == NULL) || (ctx->hash == NULL)){
 		goto err;
 	}
 
+	if((*outlen) < ctx->hash->digest_size){
+		goto err;
+	}
+
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
 	ctx->hash->hfunc_finalize(&(ctx->in_ctx), in_hash);
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
 	ctx->hash->hfunc_update(&(ctx->out_ctx), in_hash, ctx->hash->digest_size);
+	/* Check our callback */
+	if(hash_mapping_callbacks_sanity_check(ctx->hash)){
+		goto err;
+	}
 	ctx->hash->hfunc_finalize(&(ctx->out_ctx), output);
 	*outlen = ctx->hash->digest_size;
 
@@ -93,7 +144,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
         if(hash == NULL){
 		goto err;
         }
-	if(*outlen < dklen){
+	if((*outlen) < dklen){
 		goto err;
 	}
 	if(hmac_init(&hm_ctx_init, password, password_len, hash_type)){
