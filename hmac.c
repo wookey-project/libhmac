@@ -1,4 +1,5 @@
 #include "libc/types.h"
+#include "libc/string.h"
 #include "libc/regutils.h"
 #include "libc/arpa/inet.h"
 #include "api/hmac.h"
@@ -10,8 +11,8 @@ int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, h
         unsigned int i, local_hmac_key_len;
 
 	/* Set ipad and opad to appropriate values */
-	local_memset(ipad, 0x36, sizeof(ipad));
-	local_memset(opad, 0x5c, sizeof(opad));
+	memset(ipad, 0x36, sizeof(ipad));
+	memset(opad, 0x5c, sizeof(opad));
 
         /* Get the hash mapping of the current asked hash function */
         ctx->hash = get_hash_by_type(hash_type);
@@ -21,7 +22,7 @@ int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, h
 
         if(hmackey_len <= ctx->hash->block_size){
 		/* The key size is less than the hash function block size */
-		local_memcpy(local_hmac_key, hmackey, hmackey_len);
+		memcpy(local_hmac_key, hmackey, hmackey_len);
 		local_hmac_key_len = hmackey_len;
         }
 	else{
@@ -156,7 +157,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 	num_rounds = ((dklen % hash->digest_size) == 0) ? (dklen / hash->digest_size) : ((dklen / hash->digest_size) + 1);
 	for(i = 0; i < num_rounds; i++){
 		uint32_t big_i = htonl(i+1);
-		local_memset(pbkdf, 0, sizeof(pbkdf));
+		memset(pbkdf, 0, sizeof(pbkdf));
 		hm_ctx = hm_ctx_init;
 		hmac_update(&hm_ctx, salt, salt_len);
 		hmac_update(&hm_ctx, (uint8_t*)(&big_i), 4);
@@ -168,7 +169,7 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 			pbkdf[k] ^= hmac[k];
 		}
 		for(j = 0; j < (c-1); j++){
-			local_memcpy(prev_hmac, hmac, hmac_len);
+			memcpy(prev_hmac, hmac, hmac_len);
 			hm_ctx = hm_ctx_init;
 			hmac_update(&hm_ctx, prev_hmac, hmac_len);
 			if(hmac_finalize(&hm_ctx, hmac, &hmac_len)){
@@ -180,10 +181,10 @@ int hmac_pbkdf2(hash_alg_type hash_type, const uint8_t *password, uint32_t passw
 			}
 		}
 		if((i == (num_rounds-1)) && ((dklen % hash->digest_size) != 0)){
-			local_memcpy(output+(i * hash->digest_size), pbkdf, dklen % hash->digest_size);
+			memcpy(output+(i * hash->digest_size), pbkdf, dklen % hash->digest_size);
 		}
 		else{
-			local_memcpy(output+(i * hash->digest_size), pbkdf, hash->digest_size);
+			memcpy(output+(i * hash->digest_size), pbkdf, hash->digest_size);
 		}
 	}
 
