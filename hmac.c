@@ -1,6 +1,7 @@
 #include "libc/types.h"
 #include "libc/regutils.h"
 #include "libc/arpa/inet.h"
+#include "libc/string.h"
 #include "api/hmac.h"
 
 int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, hash_alg_type hash_type){
@@ -10,8 +11,8 @@ int hmac_init(hmac_context *ctx, const uint8_t *hmackey, uint32_t hmackey_len, h
         unsigned int i, local_hmac_key_len;
 
 	/* Set ipad and opad to appropriate values */
-	local_memset(ipad, 0x36, sizeof(ipad));
-	local_memset(opad, 0x5c, sizeof(opad));
+	memset(ipad, 0x36, sizeof(ipad));
+	memset(opad, 0x5c, sizeof(opad));
 
         /* Get the hash mapping of the current asked hash function */
         ctx->hash = get_hash_by_type(hash_type);
